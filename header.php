@@ -6,7 +6,7 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
   session_start();
 }
 
-$pageTitle = $pageTitle ?? 'RetroPodo';
+$pageTitle = $pageTitle ?? 'Ma Rétro Podo';
 
 function e(string $v): string {
   return htmlspecialchars($v, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
@@ -55,7 +55,7 @@ function csrf_token(): string {
   <div class="brand"><?= e($pageTitle) ?></div>
   <nav class="nav">
     <a href="register.php">Créer un compte</a>
-    <!-- plus tard: login.php -->
+    <a href="verify_email_resend.php">Renvoyer l'email</a>
   </nav>
 </header>
 

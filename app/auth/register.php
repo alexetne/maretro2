@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 $pageTitle = 'Inscription • RetroPodo';
-require __DIR__ . '/header.php';
+require dirname(__DIR__, 2) . '/header.php';
 
 /**
  * Charge un .env simple (sans composer).
@@ -30,7 +30,7 @@ function load_env(string $path): array {
   return $env;
 }
 
-$ENV = load_env(__DIR__ . '/.env');
+$ENV = load_env(dirname(__DIR__, 2) . '/.env');
 
 function envv(array $ENV, string $key, ?string $default = null): ?string {
   return $ENV[$key] ?? $_ENV[$key] ?? getenv($key) ?: $default;
@@ -171,7 +171,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
       // Preview lien (en local), plus tard tu enverras par SMTP
       $appUrl = rtrim(envv($ENV, 'APP_URL', 'http://localhost:8000') ?? 'http://localhost:8000', '/');
-      $verifyPreviewLink = $appUrl . "/verify_email.php?token=" . urlencode($rawToken);
+      $verifyPreviewLink = $appUrl . "/auth/verify_email.php?token=" . urlencode($rawToken);
 
       $success = "Compte créé ✅. Cabinet + titulaire initialisés. Il reste à vérifier l’email.";
     } catch (PDOException $e) {
@@ -208,9 +208,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php if ($success): ?>
       <div class="success">
         <strong><?= e($success) ?></strong>
+        <div class="muted">Un email de vérification vient d’être envoyé. Clique sur le lien reçu pour valider ton compte.</div>
         <?php if ($verifyPreviewLink): ?>
           <div class="spacer"></div>
-          <div class="muted">Mode dev : lien de vérification (à remplacer par un envoi SMTP)</div>
+          <div class="muted">Dev : lien direct de vérification</div>
           <div><a href="<?= e($verifyPreviewLink) ?>"><?= e($verifyPreviewLink) ?></a></div>
         <?php endif; ?>
       </div>
@@ -269,4 +270,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   </aside>
 </div>
 
-<?php require __DIR__ . '/footer.php'; ?>
+<?php require dirname(__DIR__, 2) . '/footer.php'; ?>
