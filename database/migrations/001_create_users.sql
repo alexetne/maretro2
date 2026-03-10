@@ -1,0 +1,13 @@
+CREATE TABLE IF NOT EXISTS users (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    first_name VARCHAR(100),
+    last_name VARCHAR(100),
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password_hash TEXT NOT NULL,
+    phone VARCHAR(50),
+    platform_role VARCHAR(50) DEFAULT 'hosted_practitioner',
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_users_email (email)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

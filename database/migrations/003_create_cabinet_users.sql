@@ -1,0 +1,9 @@
+CREATE TABLE IF NOT EXISTS cabinet_users (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    cabinet_id BIGINT UNSIGNED,
+    user_id BIGINT UNSIGNED,
+    role VARCHAR(50) DEFAULT 'member',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_cabinet_users_cabinet FOREIGN KEY (cabinet_id) REFERENCES cabinets(id) ON DELETE CASCADE,
+    CONSTRAINT fk_cabinet_users_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

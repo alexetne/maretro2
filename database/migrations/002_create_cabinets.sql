@@ -1,0 +1,11 @@
+CREATE TABLE IF NOT EXISTS cabinets (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    address TEXT,
+    city VARCHAR(100),
+    postal_code VARCHAR(20),
+    country VARCHAR(100) DEFAULT 'France',
+    phone VARCHAR(50),
+    email VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
