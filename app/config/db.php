@@ -57,3 +57,11 @@ function db(): PDO
 {
     return Database::getPDO();
 }
+
+/**
+ * Backwards-compatible alias for db().
+ */
+function getPDO(): PDO
+{
+    return Database::getPDO();
+}
