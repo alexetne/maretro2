@@ -7,10 +7,12 @@ $rootPath = dirname(__DIR__, 2);
 
 // Composer autoload (required for PHPMailer, Dotenv, etc.)
 $autoloadPath = $rootPath . '/vendor/autoload.php';
-if (!file_exists($autoloadPath)) {
-    throw new RuntimeException('Composer autoload not found. Run `composer install`.');
+if (file_exists($autoloadPath)) {
+    require_once $autoloadPath;
+} else {
+    // Allow running without composer dependencies for lightweight setups
+    error_log('Warning: Composer autoload not found at ' . $autoloadPath . '. Skipping autoload.');
 }
-require_once $autoloadPath;
 
 // Load environment variables from .env if present
 if (class_exists(\Dotenv\Dotenv::class)) {
