@@ -1,67 +1,44 @@
 <?php
-declare(strict_types=1);
 
-// Database connection manager using PDO (PostgreSQL by default)
+require_once __DIR__ . '/config.php';
 
-final class Database
+class Database
 {
-    private static ?PDO $pdo = null;
-    private static array $config = [];
+    private static $instance = null;
+    private $pdo;
 
-    /**
-     * Initialize configuration once during bootstrap.
-     */
-    public static function init(array $config): void
+    private function __construct()
     {
-        self::$config = $config;
-    }
+        $host   = $_ENV['DB_HOST'] ?? '127.0.0.1';
+        $port   = $_ENV['DB_PORT'] ?? '3306';
+        $dbname = $_ENV['DB_DATABASE'];
+        $user   = $_ENV['DB_USERNAME'];
+        $pass   = $_ENV['DB_PASSWORD'];
 
-    /**
-     * Get a singleton PDO instance.
-     */
-    public static function getPDO(): PDO
-    {
-        if (self::$pdo instanceof PDO) {
-            return self::$pdo;
-        }
-
-        if (empty(self::$config)) {
-            throw new RuntimeException('Database config not loaded. Call Database::init() first.');
-        }
-
-        $driver = self::$config['driver'] ?? 'pgsql';
-        $host = self::$config['host'] ?? '127.0.0.1';
-        $port = self::$config['port'] ?? ($driver === 'pgsql' ? '5432' : '3306');
-        $db = self::$config['database'] ?? '';
-        $charset = self::$config['charset'] ?? 'utf8';
-        $sslmode = self::$config['sslmode'] ?? 'prefer';
-
-        if ($driver === 'pgsql') {
-            $dsn = sprintf('pgsql:host=%s;port=%s;dbname=%s;options=--client_encoding=%s;sslmode=%s', $host, $port, $db, $charset, $sslmode);
+        // Avoid missing socket errors when host is "localhost" by forcing TCP;
+        // allow explicit socket usage via DB_SOCKET if provided.
+        if (!empty($_ENV['DB_SOCKET'])) {
+            $dsn = "mysql:unix_socket={$_ENV['DB_SOCKET']};dbname=$dbname;charset=utf8mb4";
         } else {
-            // Fallback for MySQL deployments
-            $dsn = sprintf('mysql:host=%s;port=%s;dbname=%s;charset=%s', $host, $port, $db, $charset);
+            $safeHost = ($host === 'localhost') ? '127.0.0.1' : $host;
+            $dsn = "mysql:host=$safeHost;port=$port;dbname=$dbname;charset=utf8mb4";
         }
 
-        $options = self::$config['options'] ?? [];
-        $username = self::$config['username'] ?? '';
-        $password = self::$config['password'] ?? '';
+        $options = [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            PDO::ATTR_PERSISTENT => false
+        ];
 
-        self::$pdo = new PDO($dsn, $username, $password, $options);
-        return self::$pdo;
+        $this->pdo = new PDO($dsn, $user, $pass, $options);
     }
-}
 
-// Convenience wrapper
-function db(): PDO
-{
-    return Database::getPDO();
-}
+    public static function getConnection()
+    {
+        if (self::$instance === null) {
+            self::$instance = new Database();
+        }
 
-/**
- * Backwards-compatible alias for db().
- */
-function getPDO(): PDO
-{
-    return Database::getPDO();
+        return self::$instance->pdo;
+    }
 }
