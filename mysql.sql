@@ -1,3 +1,7 @@
+CREATE DATABASE IF NOT EXISTS maretro2;
+
+USE maretro2;
+
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     firstname VARCHAR(100) NOT NULL,
