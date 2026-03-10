@@ -105,6 +105,36 @@ class RetrocessionRepository
     }
 
     /**
+     * Update retrocession fields.
+     *
+     * @param int $id
+     * @param array $data
+     * @return bool
+     */
+    public function update(int $id, array $data): bool
+    {
+        $filtered = $this->filterColumns($data);
+        if (empty($filtered)) {
+            return false;
+        }
+
+        $setParts = [];
+        foreach ($filtered as $column => $_) {
+            $setParts[] = $column . ' = :' . $column;
+        }
+        $sql = 'UPDATE retrocessions SET ' . implode(', ', $setParts) . ' WHERE id = :id';
+        $filtered['id'] = $id;
+
+        try {
+            $stmt = $this->pdo->prepare($sql);
+            return $stmt->execute($filtered);
+        } catch (PDOException $e) {
+            error_log('RetrocessionRepository::update error: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
      * Find by id.
      *
      * @param int $id
