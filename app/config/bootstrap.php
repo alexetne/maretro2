@@ -46,9 +46,11 @@ require_once __DIR__ . '/roles.php';
 require_once __DIR__ . '/mail.php';
 
 // Optional: load global helper functions if you have them
-$helperPath = $rootPath . '/app/helpers/helpers.php';
-if (file_exists($helperPath)) {
-    require_once $helperPath;
+$helpersDir = $rootPath . '/app/helpers';
+if (is_dir($helpersDir)) {
+    foreach (glob($helpersDir . '/*.php') as $helperFile) {
+        require_once $helperFile;
+    }
 }
 
 return $config;
