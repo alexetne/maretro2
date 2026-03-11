@@ -56,7 +56,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                 $stmt->execute(["id" => $user["id"]]);
 
-                header("Location: /dashboard.php");
+                // Redirection vers l'onboarding si non terminé
+                $initStmt = $pdo->prepare("SELECT status FROM user_init_configs WHERE user_id = :id");
+                $initStmt->execute(["id" => $user["id"]]);
+                $initStatus = $initStmt->fetchColumn();
+
+                if ($initStatus === false || $initStatus !== "completed") {
+                    header("Location: /startup/index.php");
+                } else {
+                    header("Location: /dashboard.php");
+                }
                 exit();
             }
 
